@@ -26,3 +26,10 @@ Terminology:
 ```
 git init # initializes an empty git repo on your hard drive
 ```
+
+2) Hook up repository to Github account
+```
+Get the SSH URL from the repository (repo) - git@github.com:laurenneel/comparative-analysis.git
+git remote add origin git@github.com:laurenneel/comparative-analysis.git
+
+```
