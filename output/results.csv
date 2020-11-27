@@ -1,0 +1,7 @@
+,species,scenario,julian,hour,Rabs_sun,Rabs_shade
+0,Sceloporus_undulatus,undulatus_utah,1.0,0.0,216.11344831050508,211.4513262699278
+1,Sceloporus_undulatus,undulatus_utah,1.0,60.0,391.6080671360655,220.35800664611008
+2,Sceloporus_undulatus,undulatus_utah,1.0,120.0,213.98020995456451,221.27247063332752
+3,Microlophus occipitalis,occipitalis_ecuador,1.0,0.0,335.94268598506414,342.301968643778
+4,Microlophus occipitalis,occipitalis_ecuador,1.0,60.0,631.4249456510402,344.33077188319766
+5,Microlophus occipitalis,occipitalis_ecuador,1.0,120.0,334.25266520567965,344.78706220355014
