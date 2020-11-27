@@ -4,7 +4,6 @@
 from IPython import get_ipython
 
 # %%
-get_ipython().run_line_magic('time', '')
 from math import *
 import math
 import itertools
