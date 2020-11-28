@@ -2,6 +2,8 @@
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
 from IPython import get_ipython
+import pandas as pd
+
 
 # %%
 from math import *
@@ -21,6 +23,7 @@ from scipy.interpolate import *
 
 import pandas as pd
 import numpy as np
+
 
 #Setting constants for code with classes
 
@@ -80,6 +83,7 @@ class Individual():
             "jarrovi_AZ":"microclimate/jarrovi_AZ.csv",
             "virgatus_AZ":"microclimate/virgatus_AZ.csv",
         }
+
 
         self.latitude = latitude #decimal degrees
         self.longitude = longitude #decimal degrees
@@ -212,7 +216,7 @@ windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
 species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
-hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade'])
+hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
 try:
@@ -222,8 +226,8 @@ try:
         ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i])
         loaded_frame = ectotherm.dynamic_frame_load()
 
-        # previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
-        # previous_tb_timestep_shade = 5
+        previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
+        previous_tb_timestep_shade = 5
 
         for index, row in loaded_frame.iterrows():
             julian = row['julian']
@@ -234,11 +238,31 @@ try:
             shade_D0cm = row['shade_D0cm']
             Rabs_sun = ectotherm.radiation_abs(julian, hour, 1., A_S, tau, Ta_sun, sun_D0cm, A_L)
             Rabs_shade = ectotherm.radiation_abs(julian, hour, 0., A_S, tau, Ta_shade, shade_D0cm, A_L)
-            activity_data.append([species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade])
+
+            Te_sun=ectotherm.operative(Ta_sun, julian, hour, s, A_S, tau, sun_D0cm, A_L, cp, u)
+            Te_shade=ectotherm.operative(Ta_shade, julian, hour, s, A_S, tau, shade_D0cm, A_L, cp, u)
+
+            if Te_sun >= previous_tb_timestep_sun:
+                time_constant=math.exp(0.72+0.36*log(ectotherm.MASS))
+            elif Te_shade >= previous_tb_timestep_shade:
+                time_constant=math.exp(0.72+0.36*log(ectotherm.MASS))
+            elif Te_sun <= previous_tb_timestep_sun:
+                time_constant=math.exp(0.42+0.44*log(ectotherm.MASS))
+            elif Te_shade <= previous_tb_timestep_shade:
+                time_constant=math.exp(0.42+0.44*log(ectotherm.MASS))
+            else:
+                print('warning: time_constant shit is fucked')
+
+            Tb_sun= ectotherm.Tb2(Te_sun, previous_tb_timestep_sun, time_at_temp, time_constant)
+            Tb_shade= ectotherm.Tb2(Te_shade, previous_tb_timestep_shade, time_at_temp, time_constant)
+            previous_tb_timestep_sun = Tb_sun
+            previous_tb_timestep_shade = Tb_shade
+
+            activity_data.append([species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade])
             if (index == 2):
                 break
 
-    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade'])
+    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade'])
     with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
         dataframe.to_csv(f, header=True)
 except Exception as e:
@@ -294,44 +318,44 @@ except Exception as e:
 
 
 # %%
-windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
-time_at_temp=5.
+# windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
+# time_at_temp=5.
 
-species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
-hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade'])
+# species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
+# hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade'])
 
-test=[]
-# hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
-try:
-    # print(1/0)
-    for i in range(len(species)):
-        ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i])
-        loaded_frame = ectotherm.dynamic_frame_load()
+# test=[]
+# # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
+# try:
+#     # print(1/0)
+#     for i in range(len(species)):
+#         ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i])
+#         loaded_frame = ectotherm.dynamic_frame_load()
 
-        # print(len(loaded_frame))
-        # previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
-        # previous_tb_timestep_shade = 5
+#         # print(len(loaded_frame))
+#         # previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
+#         # previous_tb_timestep_shade = 5
 
-        for index, row in loaded_frame.iterrows():
-            julian = row['julian']
-            hour = row['hour']
-            Ta_sun = row['Ta_sun']
-            Ta_shade = row['Ta_shade']
-            sun_D0cm = row['sun_D0cm']
-            shade_D0cm = row['shade_D0cm']
+#         for index, row in loaded_frame.iterrows():
+#             julian = row['julian']
+#             hour = row['hour']
+#             Ta_sun = row['Ta_sun']
+#             Ta_shade = row['Ta_shade']
+#             sun_D0cm = row['sun_D0cm']
+#             shade_D0cm = row['shade_D0cm']
 
-            Rabs_sun = ectotherm.radiation_abs(julian, hour, 1., A_S, tau, Ta_sun, sun_D0cm, A_L)
-            Rabs_shade = ectotherm.radiation_abs(julian, hour, 0., A_S, tau, Ta_shade, shade_D0cm, A_L)
-            test.append(Rabs_shade)
+#             Rabs_sun = ectotherm.radiation_abs(julian, hour, 1., A_S, tau, Ta_sun, sun_D0cm, A_L)
+#             Rabs_shade = ectotherm.radiation_abs(julian, hour, 0., A_S, tau, Ta_shade, shade_D0cm, A_L)
+#             test.append(Rabs_shade)
 
-            # dataframe = pd.DataFrame([[species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade]], columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade'])
-            #
-            #
-            # with open('results.csv', 'a') as f:
-            #     dataframe.to_csv(f, header=True)
-            #     hourly_results.append(dataframe)
-except Exception as e:
-    print(e)
+#             # dataframe = pd.DataFrame([[species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade]], columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade'])
+#             #
+#             #
+#             # with open('results.csv', 'a') as f:
+#             #     dataframe.to_csv(f, header=True)
+#             #     hourly_results.append(dataframe)
+# except Exception as e:
+#     print(e)
 
 
 # %%
