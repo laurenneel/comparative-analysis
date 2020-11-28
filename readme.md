@@ -1,4 +1,3 @@
-# Python Notes
 
 # Debugging Notes
 
