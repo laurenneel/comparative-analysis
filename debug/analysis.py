@@ -258,6 +258,9 @@ try:
             previous_tb_timestep_sun = Tb_sun
             previous_tb_timestep_shade = Tb_shade
 
+
+            
+
             activity_data.append([species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade])
             if (index == 2):
                 break
@@ -487,5 +490,4 @@ except Exception as e:
 # #             dataframe = pd.DataFrame([[species.spp[i],scenarios[scenario_val],julian,hour,Rabs_sun]],columns = ['species','study_group','julian','hour','Rabs_sun'])
 # #             hourly_results.append(dataframe)
 # # hourly_results.to_csv('Desktop/hourly_v14_standard.csv',columns=['species','study_group','julian','hour','Rabs_sun'])
-
 
