@@ -221,7 +221,7 @@ windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
 species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
-hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
+hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
 try:
@@ -274,11 +274,11 @@ try:
 
 
 
-            activity_data.append([species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C])
+            activity_data.append([species.spp[i], scenarios[i], julian, hour, tpref_mean, Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C])
             if (index == 2):
                 break
 
-    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
+    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
     with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
         dataframe.to_csv(f, header=True)
 except Exception as e:
