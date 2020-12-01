@@ -45,7 +45,7 @@ s = 1.0 #proportion of animal in sun
 scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','agilis_kostek','agilis_sergokala','agilis_khuchni','agilis_termenlik','agilis_kuli','strigata_kostek','strigata_sergokala','strigata_khuchni','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ']
 
 class Individual():
-    def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity):
+    def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity,tpref_mean):
         'the classes object that holds the relevant morphological, physiological, and geographic information for the animal'
         self.type = ectotherm_type #lizard only
         self.lizard_spp = lizard_species
@@ -96,6 +96,7 @@ class Individual():
         #self.A_L = longwave_absorbance #absorbance of organism to longwave radiation
         self.E_G = emissivity #ground emissivity
         self.E_S = 0.97 #emissivity of organism
+        self.tpref_mean = tpref_mean
         #self.Tb_shade = Tb_shade
         #self.Tb_sun = Tb_sun
         #self.Tpref_min = Tpref_min
@@ -212,18 +213,22 @@ class Individual():
     def Tb2(self, Te, Tb1, time_at_temp, time_constant):
         return Te + ((Tb1-Te)*(math.exp(-time_at_temp/time_constant)))
 
+    # def activity_status_5C(self, Te, Tb1, time_at_temp, time_constant):
+    #     activity_status = [1 if (Tpref_min <= shade <= Tpref_max or Tpref_min <= sun <= Tpref_max) else 0 for shade, sun in zip(tb_shade, tb_sun)]
+
+
 windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
 species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
-hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade'])
+hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
 try:
     for i in range(len(species)):
         if i > 1:
             break
-        ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i])
+        ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
         loaded_frame = ectotherm.dynamic_frame_load()
 
         previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
@@ -258,14 +263,22 @@ try:
             previous_tb_timestep_sun = Tb_sun
             previous_tb_timestep_shade = Tb_shade
 
+            activity_status_5C = [0 if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1]
+            activity_status_25C = [0 if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1]
+            activity_status_skewed_5C = [0 if Tb_sun > (ectotherm.tpref_mean+1.25) or Tb_shade < (ectotherm.tpref_mean-3.75) else 1]
+            activity_status_skewed_10C = [0 if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-7.5) else 1]
 
-            
+            # activity_status_5C = [1 if ((Tpref_mean-2.5) <= Tb_shade <= (Tpref_mean+2.5) or (Tpref_mean-2.5) <= Tb_sun <= (Tpref_mean+2.5) else 0 for shade, sun in zip(tb_shade, tb_sun)]
 
-            activity_data.append([species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade])
+
+
+
+
+            activity_data.append([species.spp[i], scenarios[i], julian, hour, Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C])
             if (index == 2):
                 break
 
-    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade'])
+    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
     with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
         dataframe.to_csv(f, header=True)
 except Exception as e:
