@@ -115,3 +115,11 @@ source jupyterenv/bin/activate
 ```
 pip install -r reqs.txt
 ```
+
+# Conversion of Python to iPynb
+
+```
+pip install ipynb-py-convert
+ipynb-py-convert input_script.py output_script.ipynb
+```
+
