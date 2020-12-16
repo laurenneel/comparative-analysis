@@ -121,5 +121,19 @@ pip install -r reqs.txt
 ```
 pip install ipynb-py-convert
 ipynb-py-convert input_script.py output_script.ipynb
+
+
+# ipynb-py-convert debug/analysis.py analysis_test.ipynb #make sure directory is correct
+
+# from root dir go into debug folder, locate analysis.py script, and save as analysis_test.ipynb 
+# ../ before output name (3rd arg) to have it saved up a level
+#three things needed in one line, separated by a space
+#first... the command... ipynb-py-convert
+#second... first arg... python file you want to convert to ipynb file
+#third... second arg... file name or ipynb file you're making
+
+#the two args need to be in correct directory 
+#pwd = print wd
+#cd../ = changes wd up one level 
 ```
 
