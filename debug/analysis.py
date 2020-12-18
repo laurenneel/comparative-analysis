@@ -8,6 +8,8 @@ import pandas as pd
 # %%
 from math import *
 import math
+import statistics
+from collections import OrderedDict 
 import itertools
 import time
 import glob
@@ -42,7 +44,9 @@ A_S = 0.8 #shortwave rad absorbance of animal
 A_L = 0.95 #longwave rad absorbance of animal
 s = 1.0 #proportion of animal in sun
 
-scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','agilis_kostek','agilis_sergokala','agilis_khuchni','agilis_termenlik','agilis_kuli','strigata_kostek','strigata_sergokala','strigata_khuchni','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ']
+# scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','agilis_kostek','agilis_sergokala','agilis_khuchni','agilis_termenlik','agilis_kuli','strigata_kostek','strigata_sergokala','strigata_khuchni','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ']
+scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma']
+
 
 class Individual():
     def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity,tpref_mean):
@@ -62,14 +66,14 @@ class Individual():
             "graciosus_kolob": "microclimate/graciosus_kolob.csv",
             "graciosus_mtdiablo": "microclimate/graciosus_mtdiablo.csv",
             "scitulus_NM": "microclimate/scitulus_NM.csv",
-            "agilis_kostek": "microclimate/agilis_kostek.csv",
-            "agilis_sergokala": "microclimate/agilis_sergokala.csv",
-            "agilis_khuchni": "microclimate/agilis_khuchni.csv",
-            "agilis_termenlik": "microclimate/agilis_termenlik.csv",
-            "agilis_kuli": "microclimate/agilis_kuli.csv",
-            "strigata_kostek":"microclimate/strigata_kostek.csv",
-            "strigata_sergokala":"microclimate/strigata_sergokala.csv",
-            "strigata_khuchni":"microclimate/strigata_khuchni.csv",
+            # "agilis_kostek": "microclimate/agilis_kostek.csv",
+            # "agilis_sergokala": "microclimate/agilis_sergokala.csv",
+            # "agilis_khuchni": "microclimate/agilis_khuchni.csv",
+            # "agilis_termenlik": "microclimate/agilis_termenlik.csv",
+            # "agilis_kuli": "microclimate/agilis_kuli.csv",
+            # "strigata_kostek":"microclimate/strigata_kostek.csv",
+            # "strigata_sergokala":"microclimate/strigata_sergokala.csv",
+            # "strigata_khuchni":"microclimate/strigata_khuchni.csv",
             "mucronatus_usa":"microclimate/mucronatus_usa.csv",
             "grammicus_mexico": "microclimate/grammicus_mexico.csv",
             "grammicus_laguna": "microclimate/grammicus_laguna.csv",
@@ -82,6 +86,37 @@ class Individual():
             "boskianus_mallahat":"microclimate/boskianus_mallahat.csv",
             "jarrovi_AZ":"microclimate/jarrovi_AZ.csv",
             "virgatus_AZ":"microclimate/virgatus_AZ.csv",
+            "mamorata_durango":"microclimate/mamorata_durango.csv",
+            "stanburiana_durango":"microclimate/stanburiana_durango.csv",
+            "podacris_hispanica_salamanca":"microclimate/podacris_hispanica_salamanca.csv",
+            "psammodromus_algirus_salamanca":"microclimate/psammodromus_algirus_salamanca.csv",
+            "psammodromus_hispanicus_salamanca":"microclimate/psammodromus_hispanicus_salamanca.csv",
+            "schreiberi_salamanca":"microclimate/schreiberi_salamanca.csv",
+            "lepida_ciudadrealspain":"microclimate/lepida_ciudadrealspain.csv",
+            "cantabrica_asturias":"microclimate/cantabrica_asturias.csv",
+            "vivipara_asturias":"microclimate/vivipara_asturias.csv",
+            "cyreni_avila":"microclimate/cyreni_avila.csv",
+            "hispanica_asturias":"microclimate/hispanica_asturias.csv",
+            "hispanica_asturias":"microclimate/hispanica_asturias.csv",
+            "muralis_asturias":"microclimate/muralis_asturias.csv",
+            "atrata_columbretes":"microclimate/atrata_columbretes.csv",
+            "erythrurus_madrid":"microclimate/erythrurus_madrid.csv",
+            "septentrionalis_xinshau":"microclimate/septentrionalis_xinshau.csv",
+            "tachydromoides_honsu":"microclimate/tachydromoides_honsu.csv",
+            "vivipara_antwerpen":"microclimate/vivipara_antwerpen.csv",
+            "agilis_limberg":"microclimate/agilis_limberg.csv",
+            "viridis_loire":"microclimate/viridis_loire.csv",
+            "draconoides_maricopa":"microclimate/draconoides_maricopa.csv",
+            "ornatus_maricopa":"microclimate/ornatus_maricopa.csv",
+            "cornutum_cochise":"microclimate/cornutum_cochise.csv",
+            "maculata_cochise":"microclimate/maculata_cochise.csv",
+            "modestum_cochise":"microclimate/modestum_cochise.csv",
+            "ornatus_cochise":"microclimate/ornatus_cochise.csv",
+            "texanus_cochise":"microclimate/texanus_cochise.csv",
+            "undulatus_cochise":"microclimate/undulatus_cochise.csv",
+            "wislizeni_nevada":"microclimate/wislizeni_nevada.csv",
+            "undulatus_yavapai":"microclimate/undulatus_yavapai.csv",
+            "ornatus_yuma":"microclimate/ornatus_yuma.csv",
         }
 
 
@@ -221,7 +256,7 @@ windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
 species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
-hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
+hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C', 'ro','rcm','growth_k','growth_linf'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
 try:
@@ -274,15 +309,33 @@ try:
 
 
 
-            activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C])
+            activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
             # if (index == 2):
             #     break
 
-    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C'])
+    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C','ro','rcm','growth_k','growth_linf'])
     with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
         dataframe.to_csv(f, header=True)
 except Exception as e:
     print(e)
+
+
+#summarize results
+hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
+daily_results = hourly.groupby(['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C','ro','rcm','growth_k','growth_linf'],as_index=False)
+daily_df = daily_results.agg(OrderedDict([
+                 ('activity_status_5C' , sum),
+                 ('activity_status_25C', sum),
+                 ('activity_status_skewed_5C' , sum),
+                 ('activity_status_skewed_25C' , sum),
+                 ('Te_sun', statistics.mean),
+                 ('Te_shade' , statistics.mean),
+                 ('Tb_sun' , statistics.mean),
+                 ('Tb_shade',statistics.mean),
+                ]))
+daily_df.to_csv(join(ROOT_DIR, 'output/daily_results.csv'),index = False)
+
+
 
 
 # %%
