@@ -45,7 +45,7 @@ A_L = 0.95 #longwave rad absorbance of animal
 s = 1.0 #proportion of animal in sun
 
 # scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','agilis_kostek','agilis_sergokala','agilis_khuchni','agilis_termenlik','agilis_kuli','strigata_kostek','strigata_sergokala','strigata_khuchni','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ']
-scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma']
+scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma','pectinata_morelos','monticola_mandeo','hispanicus_highland_central_mexico','hispanicus_lowland_central_mexico','undulatus_southcarolina','undulatus_texas','undulatus_ohio','undulatus_colorado','undulatus_consobrinus_newmexico','undulatus_tristichus_newmexico','undulatus_kansas','undulatus_garmani_nebraska','undulatus_centralAZ','nanuzae_brazil','rubrigularis_queensland','przewalskii_Alax_Zuoqi_China','przewalskii_Alax2_China','przewalskii_shandan']
 
 
 class Individual():
@@ -117,6 +117,25 @@ class Individual():
             "wislizeni_nevada":"microclimate/wislizeni_nevada.csv",
             "undulatus_yavapai":"microclimate/undulatus_yavapai.csv",
             "ornatus_yuma":"microclimate/ornatus_yuma.csv",
+
+            "pectinata_morelos":"microclimate/pectinata_morelos.csv",
+            "monticola_mandeo":"microclimate/monticola_mandeo.csv",
+            "hispanicus_highland_central_mexico":"microclimate/hispanicus_highland_central_mexico.csv",
+            "hispanicus_lowland_central_mexico":"microclimate/hispanicus_lowland_central_mexico.csv",
+            "undulatus_southcarolina":"microclimate/undulatus_southcarolina.csv",
+            "undulatus_texas":"microclimate/undulatus_texas.csv",
+            "undulatus_ohio":"microclimate/undulatus_ohio.csv",
+            "undulatus_colorado":"microclimate/undulatus_colorado.csv",
+            "undulatus_consobrinus_newmexico":"microclimate/undulatus_consobrinus_newmexico.csv",
+            "undulatus_tristichus_newmexico":"microclimate/undulatus_tristichus_newmexico.csv",
+            "undulatus_kansas":"microclimate/undulatus_kansas.csv",
+            "undulatus_garmani_nebraska":"microclimate/undulatus_garmani_nebraska.csv",
+            "undulatus_centralAZ":"microclimate/undulatus_central_AZ.csv",
+            "nanuzae_brazil":"microclimate/nanuzae_brazil.csv",
+            "rubrigularis_queensland":"microclimate/rubrigularis_queensland.csv",
+            "przewalskii_Alax_Zuoqi_China":"microclimate/przewalskii_Alax_Zuoqi_China.csv",
+            "przewalskii_Alax2_China":"microclimate/przewalskii_Alax2_China.csv",
+            "przewalskii_shandan":"microclimate/przewalskii_shandan.csv",
         }
 
 
@@ -255,7 +274,7 @@ class Individual():
 windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
-species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv'))
+species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv')) #### ADD SAMPLE SIZE COLUMN TO FOLLOWING 2 LINES!! 
 hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C', 'ro','rcm','growth_k','growth_linf'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
