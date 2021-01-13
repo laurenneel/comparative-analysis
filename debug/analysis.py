@@ -45,7 +45,7 @@ A_L = 0.95 #longwave rad absorbance of animal
 s = 1.0 #proportion of animal in sun
 
 # scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','agilis_kostek','agilis_sergokala','agilis_khuchni','agilis_termenlik','agilis_kuli','strigata_kostek','strigata_sergokala','strigata_khuchni','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ']
-scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma','pectinata_morelos','monticola_mandeo','hispanicus_highland_central_mexico','hispanicus_lowland_central_mexico','undulatus_southcarolina','undulatus_texas','undulatus_ohio','undulatus_colorado','undulatus_consobrinus_newmexico','undulatus_tristichus_newmexico','undulatus_kansas','undulatus_garmani_nebraska','undulatus_centralAZ','nanuzae_brazil','rubrigularis_queensland','przewalskii_Alax_Zuoqi_China','przewalskii_Alax2_China','przewalskii_shandan']
+scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','atrata_columbretes','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma','pectinata_morelos','monticola_mandeo','hispanicus_highland_central_mexico','hispanicus_lowland_central_mexico','undulatus_southcarolina','undulatus_texas','undulatus_ohio','undulatus_colorado','undulatus_consobrinus_newmexico','undulatus_tristichus_newmexico','undulatus_kansas','undulatus_garmani_nebraska','undulatus_georgia','nanuzae_brazil','rubrigularis_queensland','przewalskii_Alax_Zuoqi_China','przewalskii_Alax2_China','przewalskii_shandan']
 
 
 class Individual():
@@ -97,7 +97,6 @@ class Individual():
             "vivipara_asturias":"microclimate/vivipara_asturias.csv",
             "cyreni_avila":"microclimate/cyreni_avila.csv",
             "hispanica_asturias":"microclimate/hispanica_asturias.csv",
-            "hispanica_asturias":"microclimate/hispanica_asturias.csv",
             "muralis_asturias":"microclimate/muralis_asturias.csv",
             "atrata_columbretes":"microclimate/atrata_columbretes.csv",
             "erythrurus_madrid":"microclimate/erythrurus_madrid.csv",
@@ -130,7 +129,7 @@ class Individual():
             "undulatus_tristichus_newmexico":"microclimate/undulatus_tristichus_newmexico.csv",
             "undulatus_kansas":"microclimate/undulatus_kansas.csv",
             "undulatus_garmani_nebraska":"microclimate/undulatus_garmani_nebraska.csv",
-            "undulatus_centralAZ":"microclimate/undulatus_central_AZ.csv",
+            "undulatus_georgia":"microclimate/undulatus_georgia.csv",
             "nanuzae_brazil":"microclimate/nanuzae_brazil.csv",
             "rubrigularis_queensland":"microclimate/rubrigularis_queensland.csv",
             "przewalskii_Alax_Zuoqi_China":"microclimate/przewalskii_Alax_Zuoqi_China.csv",
@@ -274,21 +273,29 @@ class Individual():
 windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
-species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv')) #### ADD SAMPLE SIZE COLUMN TO FOLLOWING 2 LINES!! 
+species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv')) 
 hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C', 'ro','rcm','growth_k','growth_linf'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
+# failedspecifes=0
+# failedhour=-1
 try:
     for i in range(len(species)):
-        # if i > 1: #comment this line out when generating full results
-        #     break #comment this line out when generating full results
-        ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
+        # failedspecifes = i
+        try:
+            ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
+        except Exception as e:
+            print(e)
+
         loaded_frame = ectotherm.dynamic_frame_load()
 
         previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
         previous_tb_timestep_shade = 5
 
         for index, row in loaded_frame.iterrows():
+            if (index == 2):
+                break
+            # failedhour=index
             julian = row['julian']
             hour = row['hour']
             Ta_sun = row['Ta_sun']
@@ -317,16 +324,12 @@ try:
             previous_tb_timestep_sun = Tb_sun
             previous_tb_timestep_shade = Tb_shade
 
-            activity_status_5C = [0.and if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1.]
+            activity_status_5C = [0. if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1.]
             activity_status_25C = [0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1.]
             activity_status_skewed_5C = [0. if Tb_sun > (ectotherm.tpref_mean+1.25) or Tb_shade < (ectotherm.tpref_mean-3.75) else 1.]
             activity_status_skewed_10C = [0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-7.5) else 1.]
 
             # activity_status_5C = [1 if ((Tpref_mean-2.5) <= Tb_shade <= (Tpref_mean+2.5) or (Tpref_mean-2.5) <= Tb_sun <= (Tpref_mean+2.5) else 0 for shade, sun in zip(tb_shade, tb_sun)]
-
-
-
-
 
             activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
             # if (index == 2): #comment this line out when generating full results
@@ -337,6 +340,7 @@ try:
         dataframe.to_csv(f, header=True)
 except Exception as e:
     print(e)
+
 
 
 #summarize results
