@@ -44,7 +44,6 @@ A_S = 0.8 #shortwave rad absorbance of animal
 A_L = 0.95 #longwave rad absorbance of animal
 s = 1.0 #proportion of animal in sun
 
-# scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','agilis_kostek','agilis_sergokala','agilis_khuchni','agilis_termenlik','agilis_kuli','strigata_kostek','strigata_sergokala','strigata_khuchni','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ']
 scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','atrata_columbretes','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma','pectinata_morelos','monticola_mandeo','hispanicus_highland_central_mexico','hispanicus_lowland_central_mexico','undulatus_southcarolina','undulatus_texas','undulatus_ohio','undulatus_colorado','undulatus_consobrinus_newmexico','undulatus_tristichus_newmexico','undulatus_kansas','undulatus_garmani_nebraska','undulatus_georgia','nanuzae_brazil','rubrigularis_queensland','przewalskii_Alax_Zuoqi_China','przewalskii_Alax2_China','przewalskii_shandan']
 
 
@@ -66,14 +65,6 @@ class Individual():
             "graciosus_kolob": "microclimate/graciosus_kolob.csv",
             "graciosus_mtdiablo": "microclimate/graciosus_mtdiablo.csv",
             "scitulus_NM": "microclimate/scitulus_NM.csv",
-            # "agilis_kostek": "microclimate/agilis_kostek.csv",
-            # "agilis_sergokala": "microclimate/agilis_sergokala.csv",
-            # "agilis_khuchni": "microclimate/agilis_khuchni.csv",
-            # "agilis_termenlik": "microclimate/agilis_termenlik.csv",
-            # "agilis_kuli": "microclimate/agilis_kuli.csv",
-            # "strigata_kostek":"microclimate/strigata_kostek.csv",
-            # "strigata_sergokala":"microclimate/strigata_sergokala.csv",
-            # "strigata_khuchni":"microclimate/strigata_khuchni.csv",
             "mucronatus_usa":"microclimate/mucronatus_usa.csv",
             "grammicus_mexico": "microclimate/grammicus_mexico.csv",
             "grammicus_laguna": "microclimate/grammicus_laguna.csv",
@@ -116,7 +107,6 @@ class Individual():
             "wislizeni_nevada":"microclimate/wislizeni_nevada.csv",
             "undulatus_yavapai":"microclimate/undulatus_yavapai.csv",
             "ornatus_yuma":"microclimate/ornatus_yuma.csv",
-
             "pectinata_morelos":"microclimate/pectinata_morelos.csv",
             "monticola_mandeo":"microclimate/monticola_mandeo.csv",
             "hispanicus_highland_central_mexico":"microclimate/hispanicus_highland_central_mexico.csv",
@@ -274,14 +264,14 @@ windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
 species = pd.read_csv(join(ROOT_DIR, 'parameters/input.csv')) 
-hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C', 'ro','rcm','growth_k','growth_linf'])
+# hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C', 'ro','rcm','growth_k','growth_linf'])
 activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
-# failedspecifes=0
-# failedhour=-1
+
+
 try:
     for i in range(len(species)):
-        # failedspecifes = i
+        failedspecifes = i
         try:
             ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
         except Exception as e:
@@ -293,9 +283,9 @@ try:
         previous_tb_timestep_shade = 5
 
         for index, row in loaded_frame.iterrows():
-            if (index == 2):
-                break
-            # failedhour=index
+            if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
+                break #12Jan2020 , include when wanting to check if code works but not generate full dataset
+            failedhour=index
             julian = row['julian']
             hour = row['hour']
             Ta_sun = row['Ta_sun']
@@ -324,18 +314,18 @@ try:
             previous_tb_timestep_sun = Tb_sun
             previous_tb_timestep_shade = Tb_shade
 
-            activity_status_5C = [0. if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1.]
-            activity_status_25C = [0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1.]
-            activity_status_skewed_5C = [0. if Tb_sun > (ectotherm.tpref_mean+1.25) or Tb_shade < (ectotherm.tpref_mean-3.75) else 1.]
-            activity_status_skewed_10C = [0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-7.5) else 1.]
+            activity_status_5C = 0. if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1.
+            activity_status_25C = 0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1.
+            # activity_status_skewed_5C = [0. if Tb_sun > (ectotherm.tpref_mean+1.25) or Tb_shade < (ectotherm.tpref_mean-3.75) else 1.]
+            # activity_status_skewed_10C = [0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-7.5) else 1.]
 
             # activity_status_5C = [1 if ((Tpref_mean-2.5) <= Tb_shade <= (Tpref_mean+2.5) or (Tpref_mean-2.5) <= Tb_sun <= (Tpref_mean+2.5) else 0 for shade, sun in zip(tb_shade, tb_sun)]
 
-            activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C, activity_status_skewed_5C, activity_status_skewed_10C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
+            activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
             # if (index == 2): #comment this line out when generating full results
             #     break #comment this line out when generating full results
 
-    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C','ro','rcm','growth_k','growth_linf'])
+    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'])
     with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
         dataframe.to_csv(f, header=True)
 except Exception as e:
@@ -345,18 +335,18 @@ except Exception as e:
 
 #summarize results
 hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
-daily_results = hourly.groupby(['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','activity_status_skewed_5C','activity_status_skewed_10C','ro','rcm','growth_k','growth_linf'],as_index=False)
-daily_df = daily_results.agg(OrderedDict([
-                 ('activity_status_5C' , sum),
-                 ('activity_status_25C', sum),
-                 ('activity_status_skewed_5C' , sum),
-                 ('activity_status_skewed_25C' , sum),
-                 ('Te_sun', statistics.mean),
-                 ('Te_shade' , statistics.mean),
-                 ('Tb_sun' , statistics.mean),
-                 ('Tb_shade',statistics.mean),
-                ]))
-daily_df.to_csv(join(ROOT_DIR, 'output/daily_results.csv'),index = False)
+# daily_results = hourly.groupby(['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'],as_index=False)
+# daily_results = hourly.groupby(['scenario'],as_index=False)
+# daily_df = pd.DataFrame([OrderedDict([
+#                  ('activity_status_5C' , hourly.groupby(by=["scenario"])["activity_status_5C"].sum().reset_index(name='lauren')),
+#                  ('activity_status_25C', hourly.groupby(by=["scenario"])["activity_status_25C"].sum().reset_index(name='jake')),
+#                 #  ('Te_sun', statistics.mean),
+#                 #  ('Te_shade' , statistics.mean),
+#                 #  ('Tb_sun' , statistics.mean),
+#                 #  ('Tb_shade',statistics.mean),
+#                 ])], columns=["sum_activity_status_5C", "sum_activity_status_25C"])
+resultant_df = pd.merge(hourly.groupby(by=["scenario"])["activity_status_5C"].sum().reset_index(name='sum_activity_status_5C'), hourly.groupby(by=["scenario"])["activity_status_25C"].sum().reset_index(name='sum_activity_status_25C'), how='inner', on=['scenario'])
+resultant_df.to_csv(join(ROOT_DIR, 'output/daily_results.csv'),index = False)
 
 
 
