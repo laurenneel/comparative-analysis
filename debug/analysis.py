@@ -26,7 +26,7 @@ from scipy.interpolate import *
 import pandas as pd
 import numpy as np
 
-
+#eee
 #Setting constants for code with classes
 
 SOLAR_CONSTANT = 1360. #W*m^-2
