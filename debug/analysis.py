@@ -44,7 +44,7 @@ A_S = 0.8 #shortwave rad absorbance of animal
 A_L = 0.95 #longwave rad absorbance of animal
 s = 1.0 #proportion of animal in sun
 
-scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','atrata_columbretes','erythrurus_madrid','septentrionalis_xinshau','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma','pectinata_morelos','monticola_mandeo','hispanicus_highland_central_mexico','hispanicus_lowland_central_mexico','undulatus_southcarolina','undulatus_texas','undulatus_ohio','undulatus_colorado','undulatus_consobrinus_newmexico','undulatus_tristichus_newmexico','undulatus_kansas','undulatus_garmani_nebraska','undulatus_georgia','nanuzae_brazil','rubrigularis_queensland','przewalskii_Alax_Zuoqi_China','przewalskii_Alax2_China','przewalskii_shandan']
+scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','ornatus_AZ','graciosus_kolob','graciosus_mtdiablo','scitulus_NM','mucronatus_usa','grammicus_mexico','grammicus_laguna','grammicus_paredon','maculata_nebraska','undulatus_nebraska','undulatus_newjersey','merriami_usa','boskianus_gabal','boskianus_mallahat','jarrovi_AZ','virgatus_AZ','mamorata_durango','stanburiana_durango','podacris_hispanica_salamanca','psammodromus_algirus_salamanca','psammodromus_hispanicus_salamanca','schreiberi_salamanca','lepida_ciudadrealspain','cantabrica_asturias','vivipara_asturias','cyreni_avila','hispanica_asturias','muralis_asturias','atrata_columbretes','erythrurus_madrid','tachydromoides_honsu','vivipara_antwerpen','agilis_limberg','viridis_loire','draconoides_maricopa','ornatus_maricopa','cornutum_cochise','maculata_cochise','modestum_cochise','ornatus_cochise','texanus_cochise','undulatus_cochise','wislizeni_nevada','undulatus_yavapai','ornatus_yuma','pectinata_morelos','monticola_mandeo','hispanicus_highland_central_mexico','hispanicus_lowland_central_mexico','undulatus_southcarolina','undulatus_texas','undulatus_ohio','undulatus_colorado','undulatus_consobrinus_newmexico','undulatus_tristichus_newmexico','undulatus_kansas','undulatus_garmani_nebraska','undulatus_georgia','nanuzae_brazil','rubrigularis_queensland','przewalskii_Alax_Zuoqi_China','przewalskii_Alax2_China','przewalskii_shandan', 'ornatus_grapevine','ornatus_animas','ornatus_chiricahua','ornatus_sunflower','lilfordi_mallorca','septentrionalis_chuzhou','septentrionalis_hangzhou','septentrionalis_lishui','septentrionalis_ningde','septentrionalis_guiyang','asio_mexico','braconnieri_mexico','cornutum_texas','coronatum_baja','douglassi_utah','mcalli_CA','modestum_NM_TX','orbiculare_mexico','platyrhinos_nevada','platyrhinos_utah','platyrhinos_mojave','platyrhinos_utah2','solare_arizona','maccoyi_canberra','guichenoti_canberra','coventryi_canberra','extrecasteauxii_canberra','tympanum_canberra','vittatus_veracruz','okadae_japan','undulatus_nebraska2','undulatus_newjersey2']
 
 
 class Individual():
@@ -91,7 +91,7 @@ class Individual():
             "muralis_asturias":"microclimate/muralis_asturias.csv",
             "atrata_columbretes":"microclimate/atrata_columbretes.csv",
             "erythrurus_madrid":"microclimate/erythrurus_madrid.csv",
-            "septentrionalis_xinshau":"microclimate/septentrionalis_xinshau.csv",
+            # "septentrionalis_xinshau":"microclimate/septentrionalis_xinshau.csv",
             "tachydromoides_honsu":"microclimate/tachydromoides_honsu.csv",
             "vivipara_antwerpen":"microclimate/vivipara_antwerpen.csv",
             "agilis_limberg":"microclimate/agilis_limberg.csv",
@@ -125,6 +125,39 @@ class Individual():
             "przewalskii_Alax_Zuoqi_China":"microclimate/przewalskii_Alax_Zuoqi_China.csv",
             "przewalskii_Alax2_China":"microclimate/przewalskii_Alax2_China.csv",
             "przewalskii_shandan":"microclimate/przewalskii_shandan.csv",
+
+            "ornatus_grapevine":"microclimate/ornatus_grapevine.csv",
+            "ornatus_animas":"microclimate/ornatus_animas.csv",
+            "ornatus_chiricahua":"microclimate/ornatus_chiricahua.csv",
+            "ornatus_sunflower":"microclimate/ornatus_sunflower.csv",
+            "lilfordi_mallorca":"microclimate/lilfordi_mallorca.csv",
+            "septentrionalis_chuzhou":"microclimate/septentrionalis_chuzhou.csv",
+            "septentrionalis_hangzhou":"microclimate/septentrionalis_hangzhou.csv",
+            "septentrionalis_lishui":"microclimate/septentrionalis_lishui.csv",
+            "septentrionalis_ningde":"microclimate/septentrionalis_ningde.csv",
+            "septentrionalis_guiyang":"microclimate/septentrionalis_guiyang.csv",
+            "asio_mexico":"microclimate/asio_mexico.csv",
+            "braconnieri_mexico":"microclimate/braconnieri_mexico.csv",
+            "cornutum_texas":"microclimate/cornutum_texas.csv",
+            "coronatum_baja":"microclimate/coronatum_baja.csv",
+            "douglassi_utah":"microclimate/douglassi_utah.csv",
+            "mcalli_CA":"microclimate/mcalli_CA.csv",
+            "modestum_NM_TX":"microclimate/modestum_NM_TX.csv",
+            "orbiculare_mexico":"microclimate/orbiculare_mexico.csv",
+            "platyrhinos_nevada":"microclimate/platyrhinos_nevada.csv",
+            "platyrhinos_utah":"microclimate/platyrhinos_utah.csv",
+            "platyrhinos_mojave":"microclimate/platyrhinos_mojave.csv",
+            "platyrhinos_utah2":"microclimate/platyrhinos_utah2.csv",
+            "solare_arizona":"microclimate/solare_arizona.csv",
+            "maccoyi_canberra":"microclimate/maccoyi_canberra.csv",
+            "guichenoti_canberra":"microclimate/guichenoti_canberra.csv",
+            "coventryi_canberra":"microclimate/coventryi_canberra.csv",
+            "extrecasteauxii_canberra":"microclimate/extrecasteauxii_canberra.csv",
+            "tympanum_canberra":"microclimate/tympanum_canberra.csv",
+            "vittatus_veracruz":"microclimate/vittatus_veracruz.csv",
+            "okadae_japan":"microclimate/okadae_japan.csv",
+            "undulatus_nebraska2":"microclimate/undulatus_nebraska2.csv",
+            "undulatus_newjersey2":"microclimate/undulatus_newjersey2.csv",
         }
 
 
@@ -271,11 +304,7 @@ activity_data = []
 
 try:
     for i in range(len(species)):
-        failedspecifes = i
-        try:
-            ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
-        except Exception as e:
-            print(e)
+        ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
 
         loaded_frame = ectotherm.dynamic_frame_load()
 
@@ -283,9 +312,9 @@ try:
         previous_tb_timestep_shade = 5
 
         for index, row in loaded_frame.iterrows():
-            if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
-                break #12Jan2020 , include when wanting to check if code works but not generate full dataset
-            failedhour=index
+            # if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
+            #     break #12Jan2020 , include when wanting to check if code works but not generate full dataset
+            # failedhour=index
             julian = row['julian']
             hour = row['hour']
             Ta_sun = row['Ta_sun']
@@ -331,7 +360,7 @@ try:
 except Exception as e:
     print(e)
 
-
+### test 2Feb because issues pushing changes to git
 
 #summarize results
 hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
