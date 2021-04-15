@@ -347,7 +347,7 @@ try:
             activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1.
             ####
 
-#### APRIL 15 desktop
+#### APRIL 15 laptop
 
             #activity_status_5C = 0. if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1. 
             #activity_status_25C = 0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1.
