@@ -347,7 +347,7 @@ try:
             activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1.
             ####
 
-#### test#15april
+#### APRIL 15 desktop
 
             #activity_status_5C = 0. if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1. 
             #activity_status_25C = 0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1.
@@ -366,7 +366,7 @@ try:
 except Exception as e:
     print(e)
 
-### test 2Feb because issues pushing changes to git
+
 
 #summarize results
 hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
