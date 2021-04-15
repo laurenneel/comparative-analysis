@@ -343,12 +343,22 @@ try:
             previous_tb_timestep_sun = Tb_sun
             previous_tb_timestep_shade = Tb_shade
 
-            #activity_status_5C = 0. if (Tb_sun > (ectotherm.tpref_mean+5.0)) & (Tb_shade > (ectotherm.tpref_mean+5.0)) | (Tb_sun < (ectotherm.tpref_mean-5.0)) else 1.
-            #activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1.
+            #activity_status_5C = 0. if (Tb_sun > (ectotherm.tpref_mean+5.0)) & (Tb_shade > (ectotherm.tpref_mean+5.0)) | (Tb_sun < (ectotherm.tpref_mean-5.0)) else 1. #original
+            #activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1. #original
 
-            activity_status_5C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)) else 0.
-            activity_status_25C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)) else 0.
-
+            #activity_status_5C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)) else 0.
+            #activity_status_25C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)) else 0.
+            if (8. < hour < 18.):
+                if (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)):
+                    activity_status_5C = 1.
+                else:
+                    activity_status_5C = 0.
+            if (8. < hour < 18.):
+                if (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)):
+                    activity_status_25C = 1.
+                else:
+                    activity_status_25C = 0.
+            
 
 
 
