@@ -312,8 +312,8 @@ try:
         previous_tb_timestep_shade = 5
 
         for index, row in loaded_frame.iterrows():
-            # if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
-            #     break #12Jan2020 , include when wanting to check if code works but not generate full dataset
+            if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
+                break #12Jan2020 , include when wanting to check if code works but not generate full dataset
             # failedhour=index
             julian = row['julian']
             hour = row['hour']
@@ -343,8 +343,15 @@ try:
             previous_tb_timestep_sun = Tb_sun
             previous_tb_timestep_shade = Tb_shade
 
-            activity_status_5C = 0. if (Tb_sun > (ectotherm.tpref_mean+5.0)) & (Tb_shade > (ectotherm.tpref_mean+5.0)) | (Tb_sun < (ectotherm.tpref_mean-5.0)) else 1.
-            activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1.
+            #activity_status_5C = 0. if (Tb_sun > (ectotherm.tpref_mean+5.0)) & (Tb_shade > (ectotherm.tpref_mean+5.0)) | (Tb_sun < (ectotherm.tpref_mean-5.0)) else 1.
+            #activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1.
+
+            activity_status_5C = 1. if (8. < hour < 18.) and (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)) else 0.
+            activity_status_25C = 1. if (8. < hour < 18.) and (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)) else 0.
+
+
+
+
             ####
 
 #### APRIL 15 laptop
