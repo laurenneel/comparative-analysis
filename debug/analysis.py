@@ -358,6 +358,8 @@ try:
                     activity_status_25C = 1.
                 else:
                     activity_status_25C = 0.
+
+
             
 
 
