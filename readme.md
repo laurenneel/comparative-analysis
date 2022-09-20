@@ -104,6 +104,13 @@ pip3 install ipykernel
 
 3. Verify you're running within the virtual environment like so: `pip -V`
 
+4. NOTE: if you need to specify the version of python in the new virtual environment
+```
+virtualenv --python=python3.5 .venv
+source .venv/bin/activate
+```
+where '.venv' is the name of the virtual env you want to create
+
 # Activating Virtual Environment 
 
 ```
