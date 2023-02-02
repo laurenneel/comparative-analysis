@@ -312,8 +312,8 @@ try:
         previous_tb_timestep_shade = 5
 
         for index, row in loaded_frame.iterrows():
-            # if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
-            #     break #12Jan2020 , include when wanting to check if code works but not generate full dataset
+            if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
+                 break #12Jan2020 , include when wanting to check if code works but not generate full dataset
             # failedhour=index
             julian = row['julian']
             hour = row['hour']
