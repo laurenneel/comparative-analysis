@@ -48,7 +48,7 @@ scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','o
 
 
 class Individual():
-    def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity,tpref_mean):
+    def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity,tpref_mean, activity_status_5C=0., activity_status_25C=0.):
         'the classes object that holds the relevant morphological, physiological, and geographic information for the animal'
         self.type = ectotherm_type #lizard only
         self.lizard_spp = lizard_species
@@ -178,6 +178,8 @@ class Individual():
         #self.Tpref_min = Tpref_min
         #self.Tpref_max = Tpref_max
         #self.active_hours = annual_activity_hours
+        self.activity_status_5C = activity_status_5C
+        self.activity_status_25C = activity_status_25C
     
     def read_relative_path(self, filename):
         return join(dirname(dirname(__file__)), filename)
@@ -284,15 +286,20 @@ class Individual():
         return ((4*STEFAN_BOLTZMANN)*((Ta +273.15)**3.))/cp
       
     def operative(self, Ta, julian, hour, s, A_S, tau, Tg, A_L, cp, u):
-        return Ta + ((self.radiation_abs(julian, hour, s, A_S, tau, Ta, Tg, A_L) - self.E_S*STEFAN_BOLTZMANN*Ta**4) / (cp*(self.gr(Ta, cp)+self.gha(u))))
+        return Ta + ((self.radiation_abs(julian, hour, s, A_S, tau, Ta, Tg, A_L) - (self.E_S*STEFAN_BOLTZMANN*(Ta + 273.)**4)) / (cp*(self.gr(Ta, cp)+self.gha(u))))
     
     def Tb2(self, Te, Tb1, time_at_temp, time_constant):
         return Te + ((Tb1-Te)*(math.exp(-time_at_temp/time_constant)))
 
     # def activity_status_5C(self, Te, Tb1, time_at_temp, time_constant):
     #     activity_status = [1 if (Tpref_min <= shade <= Tpref_max or Tpref_min <= sun <= Tpref_max) else 0 for shade, sun in zip(tb_shade, tb_sun)]
-
-
+    #def activity_status_5C(self, julian, hour, Tb_shade, Tb_sun):
+    #    if math.cos(self.zenith(julian, hour)) > 0.:
+    #        if any(Tb_shade <= T <= Tb_sun for T in range(int(self.tpref_mean - 5.), int(self.tpref_mean + 6.))):
+    #            return 1.
+    #        else:
+    #            return 0.
+#
 windspeeds = [0.1]# [0.1,1.0,2.0,3.0]
 time_at_temp=5.
 
@@ -302,67 +309,106 @@ activity_data = []
 # hourly_results = pd.DataFrame(columns = ['species','scenario_group','julian','hour','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun', 'Tb_shade'])
 
 
-try:
-    for i in range(len(species)):
-        ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
+ 
 
-        loaded_frame = ectotherm.dynamic_frame_load()
+from tqdm import tqdm
+ 
+for i in tqdm (range (100), desc="Loading..."):
+    try:
+        for i in range(len(species)):
+            ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
 
-        previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
-        previous_tb_timestep_shade = 5
+            loaded_frame = ectotherm.dynamic_frame_load()
 
-        for index, row in loaded_frame.iterrows():
-            if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
-                 break #12Jan2020 , include when wanting to check if code works but not generate full dataset
-            # failedhour=index
-            julian = row['julian']
-            hour = row['hour']
-            Ta_sun = row['Ta_sun']
-            Ta_shade = row['Ta_shade']
-            sun_D0cm = row['sun_D0cm']
-            shade_D0cm = row['shade_D0cm']
-            Rabs_sun = ectotherm.radiation_abs(julian, hour, 1., A_S, tau, Ta_sun, sun_D0cm, A_L)
-            Rabs_shade = ectotherm.radiation_abs(julian, hour, 0., A_S, tau, Ta_shade, shade_D0cm, A_L)
+            previous_tb_timestep_sun = 5 #replacing Tb1 dummy start value
+            previous_tb_timestep_shade = 5
 
-            Te_sun=ectotherm.operative(Ta_sun, julian, hour, s, A_S, tau, sun_D0cm, A_L, cp, u)
-            Te_shade=ectotherm.operative(Ta_shade, julian, hour, s, A_S, tau, shade_D0cm, A_L, cp, u)
+            for index, row in loaded_frame.iterrows():
+                #if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
+                #     break #12Jan2020 , include when wanting to check if code works but not generate full dataset
+                failedhour=index
+                julian = row['julian']
+                hour = row['hour']/60.
+                Ta_sun = row['Ta_sun']
+                Ta_shade = row['Ta_shade']
+                sun_D0cm = row['sun_D0cm']
+                shade_D0cm = row['shade_D0cm']
+                Rabs_sun = ectotherm.radiation_abs(julian, hour, 1., A_S, tau, Ta_sun, sun_D0cm, A_L)
+                Rabs_shade = ectotherm.radiation_abs(julian, hour, 0., A_S, tau, Ta_shade, shade_D0cm, A_L)
+                #print("hour is:", hour)
+                #print("day is:", julian)
 
-            if Te_sun >= previous_tb_timestep_sun:
-                time_constant=math.exp(0.72+0.36*log(ectotherm.MASS))
-            elif Te_shade >= previous_tb_timestep_shade:
-                time_constant=math.exp(0.72+0.36*log(ectotherm.MASS))
-            elif Te_sun <= previous_tb_timestep_sun:
-                time_constant=math.exp(0.42+0.44*log(ectotherm.MASS))
-            elif Te_shade <= previous_tb_timestep_shade:
-                time_constant=math.exp(0.42+0.44*log(ectotherm.MASS))
-            else:
-                print('warning: time_constant shit is fucked')
+                Te_sun=ectotherm.operative(Ta_sun, julian, hour, s, A_S, tau, sun_D0cm, A_L, cp, u)
+                Te_shade=ectotherm.operative(Ta_shade, julian, hour, s, A_S, tau, shade_D0cm, A_L, cp, u)
 
-            Tb_sun= ectotherm.Tb2(Te_sun, previous_tb_timestep_sun, time_at_temp, time_constant)
-            Tb_shade= ectotherm.Tb2(Te_shade, previous_tb_timestep_shade, time_at_temp, time_constant)
-            previous_tb_timestep_sun = Tb_sun
-            previous_tb_timestep_shade = Tb_shade
+                if Te_sun >= previous_tb_timestep_sun:
+                    time_constant=math.exp(0.72+0.36*log(ectotherm.MASS))
+                elif Te_shade >= previous_tb_timestep_shade:
+                    time_constant=math.exp(0.72+0.36*log(ectotherm.MASS))
+                elif Te_sun <= previous_tb_timestep_sun:
+                    time_constant=math.exp(0.42+0.44*log(ectotherm.MASS))
+                elif Te_shade <= previous_tb_timestep_shade:
+                    time_constant=math.exp(0.42+0.44*log(ectotherm.MASS))
+                else:
+                    print('warning: time_constant shit is fucked')
 
+                Tb_sun= ectotherm.Tb2(Te_sun, previous_tb_timestep_sun, time_at_temp, time_constant)
+                Tb_shade= ectotherm.Tb2(Te_shade, previous_tb_timestep_shade, time_at_temp, time_constant)
+                previous_tb_timestep_sun = Tb_sun
+                previous_tb_timestep_shade = Tb_shade
+
+                if math.cos(ectotherm.zenith(julian, hour)) > 0.:
+                    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 5.), int(ectotherm.tpref_mean + 6.))):
+                        ectotherm.activity_status_5C = 1.
+                    else:
+                        ectotherm.activity_status_5C = 0.
+                #print("activity status is:", ectotherm.activity_status_5C)
+
+                if math.cos(ectotherm.zenith(julian, hour)) > 0.:
+                    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 2.5), int(ectotherm.tpref_mean + 3.5))):
+                        ectotherm.activity_status_25C = 1.
+                    else:
+                        ectotherm.activity_status_25C = 0.
+
+
+
+            
+            #activity_status_5C = ectotherm.activity_status_5C(julian, hour, Tb_shade, Tb_sun)
+            #print("activity status is:", activity_status_5C)
+            
+            #if math.cos(ectotherm.zenith(julian, hour)) > 0.:
+            #    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 5.), int(ectotherm.tpref_mean + 6.))):
+            #        activity_status_5C = 1.
+            #    else:
+            #        activity_status_5C = 0.
+            #    print("activity_status_5C is:", activity_status_5C)
+            #    
+            #    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 2.5), int(ectotherm.tpref_mean + 3.5))):
+            #        activity_status_25C = 1.
+            #    else:
+            #        activity_status_25C = 0.
+#
             # activity_status_5C = 0. if (Tb_sun > (ectotherm.tpref_mean+5.0)) & (Tb_shade > (ectotherm.tpref_mean+5.0)) | (Tb_sun < (ectotherm.tpref_mean-5.0)) else 1. #original
             # activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1. #original
 
             #activity_status_5C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)) else 0.
             #activity_status_25C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)) else 0.
-            activity_status_5C = None #declaring it so it exists.. scope issue
-            activity_status_25C = None
+            #activity_status_5C = None #declaring it so it exists.. scope issue
+           #activity_status_25C = None
 
 
 
-            if (480. < hour < 1080.):
-                if (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)):
-                    activity_status_5C = 1.
-                else:
-                    activity_status_5C = 0.
-            if (480. < hour < 1080.):
-                if (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)):
-                    activity_status_25C = 1.
-                else:
-                    activity_status_25C = 0.
+           #if (480. < hour < 1080.):
+           #    if (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)):
+           #        activity_status_5C = 1.
+           #    else:
+           #        activity_status_5C = 0.
+           #if (480. < hour < 1080.):
+           #    if (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)):
+           #        activity_status_25C = 1.
+           #    else:
+           #        activity_status_25C = 0.
+           #print(activity_status_5C)
 
 
             
@@ -380,20 +426,21 @@ try:
 
             # activity_status_5C = [1 if ((Tpref_mean-2.5) <= Tb_shade <= (Tpref_mean+2.5) or (Tpref_mean-2.5) <= Tb_sun <= (Tpref_mean+2.5) else 0 for shade, sun in zip(tb_shade, tb_sun)]
 
-            activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, activity_status_5C, activity_status_25C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
-            # if (index == 2): #comment this line out when generating full results
-            #     break #comment this line out when generating full results
+                activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, ectotherm.activity_status_5C,ectotherm.activity_status_25C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
+                # if (index == 2): #comment this line out when generating full results
+                #     break #comment this line out when generating full results
 
-    dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'])
-    with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
-        dataframe.to_csv(f, header=True)
-except Exception as e:
-    print(e)
+        dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'])
+        with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
+            dataframe.to_csv(f, header=True)
+    except Exception as e:
+        print(e)
+
 
 
 
 #summarize results
-hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
+#hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
 # daily_results = hourly.groupby(['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'],as_index=False)
 # daily_results = hourly.groupby(['scenario'],as_index=False)
 # daily_df = pd.DataFrame([OrderedDict([
@@ -404,8 +451,8 @@ hourly= pd.read_csv(join(ROOT_DIR, 'output/results.csv'))
 #                 #  ('Tb_sun' , statistics.mean),
 #                 #  ('Tb_shade',statistics.mean),
 #                 ])], columns=["sum_activity_status_5C", "sum_activity_status_25C"])
-resultant_df = pd.merge(hourly.groupby(by=["scenario"])["activity_status_5C"].sum().reset_index(name='sum_activity_status_5C'), hourly.groupby(by=["scenario"])["activity_status_25C"].sum().reset_index(name='sum_activity_status_25C'), how='inner', on=['scenario'])
-resultant_df.to_csv(join(ROOT_DIR, 'output/daily_results.csv'),index = False)
+#resultant_df = pd.merge(hourly.groupby(by=["scenario"])["activity_status_5C"].sum().reset_index(name='sum_activity_status_5C'), hourly.groupby(by=["scenario"])["activity_status_25C"].sum().reset_index(name='sum_activity_status_25C'), how='inner', on=['scenario'])
+#resultant_df.to_csv(join(ROOT_DIR, 'output/daily_results.csv'),index = False)
 
 
 
