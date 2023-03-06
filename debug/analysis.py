@@ -17,6 +17,8 @@ import os
 import csv
 from os.path import dirname, join
 ROOT_DIR = dirname(dirname(__file__))
+from tqdm import tqdm
+
 
 import matplotlib as plt
 
@@ -267,7 +269,11 @@ class Individual():
         # read in the CSV
         # concatenate the directory with the file name using join function
         # Join and adding strings with "+" operator are same
-        return pd.read_csv(self.read_relative_path(self.scenarioLink[self.scenario]))
+        df = pd.read_csv(self.read_relative_path(self.scenarioLink[self.scenario]))
+        columns_to_keep= ['julian','hour','Ta_sun','Ta_shade','sun_D0cm','shade_D0cm']
+        df=df[columns_to_keep]
+        df=df.head(8761)
+        return df
     
     def radiation_abs(self, julian, hour, s, A_S, tau, Ta, Tg, A_L):
         'total absorbed radiation'
@@ -311,11 +317,11 @@ activity_data = []
 
  
 
-from tqdm import tqdm
  
-for i in tqdm (range (100), desc="Loading..."):
+for q in tqdm (range (100), desc="Loading..."):
     try:
         for i in range(len(species)):
+            #print("i value is:", i)
             ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
 
             loaded_frame = ectotherm.dynamic_frame_load()
@@ -324,7 +330,9 @@ for i in tqdm (range (100), desc="Loading..."):
             previous_tb_timestep_shade = 5
 
             for index, row in loaded_frame.iterrows():
-                #if (index == 2): #12Jan2020 , include when wanting to check if code works but not generate full dataset
+                print("index is:", index)
+                print("row is:", row)
+                #if (index == 1): #12Jan2020 , include when wanting to check if code works but not generate full dataset
                 #     break #12Jan2020 , include when wanting to check if code works but not generate full dataset
                 failedhour=index
                 julian = row['julian']
@@ -335,8 +343,9 @@ for i in tqdm (range (100), desc="Loading..."):
                 shade_D0cm = row['shade_D0cm']
                 Rabs_sun = ectotherm.radiation_abs(julian, hour, 1., A_S, tau, Ta_sun, sun_D0cm, A_L)
                 Rabs_shade = ectotherm.radiation_abs(julian, hour, 0., A_S, tau, Ta_shade, shade_D0cm, A_L)
-                #print("hour is:", hour)
-                #print("day is:", julian)
+                print("hour is:", hour)
+                print("day is:", julian)#
+                print("Rabs_sun is:", Rabs_sun)
 
                 Te_sun=ectotherm.operative(Ta_sun, julian, hour, s, A_S, tau, sun_D0cm, A_L, cp, u)
                 Te_shade=ectotherm.operative(Ta_shade, julian, hour, s, A_S, tau, shade_D0cm, A_L, cp, u)
@@ -362,6 +371,11 @@ for i in tqdm (range (100), desc="Loading..."):
                         ectotherm.activity_status_5C = 1.
                     else:
                         ectotherm.activity_status_5C = 0.
+                else:
+                    ectotherm.activity_status_5C = 0.
+                print("activity_status_5C is:", ectotherm.activity_status_5C)
+                
+                    
                 #print("activity status is:", ectotherm.activity_status_5C)
 
                 if math.cos(ectotherm.zenith(julian, hour)) > 0.:
@@ -369,72 +383,20 @@ for i in tqdm (range (100), desc="Loading..."):
                         ectotherm.activity_status_25C = 1.
                     else:
                         ectotherm.activity_status_25C = 0.
+                else:
+                    ectotherm.activity_status_25C = 0.
+                
 
-
-
-            
-            #activity_status_5C = ectotherm.activity_status_5C(julian, hour, Tb_shade, Tb_sun)
-            #print("activity status is:", activity_status_5C)
-            
-            #if math.cos(ectotherm.zenith(julian, hour)) > 0.:
-            #    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 5.), int(ectotherm.tpref_mean + 6.))):
-            #        activity_status_5C = 1.
-            #    else:
-            #        activity_status_5C = 0.
-            #    print("activity_status_5C is:", activity_status_5C)
-            #    
-            #    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 2.5), int(ectotherm.tpref_mean + 3.5))):
-            #        activity_status_25C = 1.
-            #    else:
-            #        activity_status_25C = 0.
-#
-            # activity_status_5C = 0. if (Tb_sun > (ectotherm.tpref_mean+5.0)) & (Tb_shade > (ectotherm.tpref_mean+5.0)) | (Tb_sun < (ectotherm.tpref_mean-5.0)) else 1. #original
-            # activity_status_25C = 0. if (Tb_sun > (ectotherm.tpref_mean+2.5)) & (Tb_shade > (ectotherm.tpref_mean+2.5))| (Tb_sun < (ectotherm.tpref_mean-2.5)) else 1. #original
-
-            #activity_status_5C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)) else 0.
-            #activity_status_25C = 1. if (8. < hour < 18.) & (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)) else 0.
-            #activity_status_5C = None #declaring it so it exists.. scope issue
-           #activity_status_25C = None
-
-
-
-           #if (480. < hour < 1080.):
-           #    if (Tb_sun < (ectotherm.tpref_mean+5.0)) & (Tb_shade < (ectotherm.tpref_mean+5.0)) | (Tb_sun > (ectotherm.tpref_mean-5.0)):
-           #        activity_status_5C = 1.
-           #    else:
-           #        activity_status_5C = 0.
-           #if (480. < hour < 1080.):
-           #    if (Tb_sun < (ectotherm.tpref_mean+2.5)) & (Tb_shade < (ectotherm.tpref_mean+2.5)) | (Tb_sun > (ectotherm.tpref_mean-2.5)):
-           #        activity_status_25C = 1.
-           #    else:
-           #        activity_status_25C = 0.
-           #print(activity_status_5C)
-
-
-            
-
-
-
-            ####
-
-#### APRIL 15 laptop
-
-            #activity_status_5C = 0. if Tb_sun > (ectotherm.tpref_mean+5.0) or Tb_shade < (ectotherm.tpref_mean-5.0) else 1. 
-            #activity_status_25C = 0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-2.5) else 1.
-            # activity_status_skewed_5C = [0. if Tb_sun > (ectotherm.tpref_mean+1.25) or Tb_shade < (ectotherm.tpref_mean-3.75) else 1.]
-            # activity_status_skewed_10C = [0. if Tb_sun > (ectotherm.tpref_mean+2.5) or Tb_shade < (ectotherm.tpref_mean-7.5) else 1.]
-
-            # activity_status_5C = [1 if ((Tpref_mean-2.5) <= Tb_shade <= (Tpref_mean+2.5) or (Tpref_mean-2.5) <= Tb_sun <= (Tpref_mean+2.5) else 0 for shade, sun in zip(tb_shade, tb_sun)]
-
-                activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, ectotherm.activity_status_5C,ectotherm.activity_status_25C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
+                activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i],species.latitude[i],species.longitude[i],species.altitude[i], species.mass[i],species.length[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, ectotherm.activity_status_5C,ectotherm.activity_status_25C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
                 # if (index == 2): #comment this line out when generating full results
                 #     break #comment this line out when generating full results
 
-        dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'])
+        dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','latitude','longitude','altitude','mass','length','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'])
         with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
             dataframe.to_csv(f, header=True)
+        #f.close()
     except Exception as e:
-        print(e)
+        print("an error occured:", e)
 
 
 
