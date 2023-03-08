@@ -50,7 +50,7 @@ scenarios= ['undulatus_utah','occipitalis_ecuador','undulatus_AZ','clarki_AZ','o
 
 
 class Individual():
-    def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity,tpref_mean, activity_status_5C=0., activity_status_25C=0.):
+    def __init__(self,ectotherm_type,lizard_species,lizard_location,scenario,latitude,longitude,altitude,mass,length,width,emissivity,tpref_mean, reproductive_mode, diet, activity_status_5C=0., activity_status_clim=0.):
         'the classes object that holds the relevant morphological, physiological, and geographic information for the animal'
         self.type = ectotherm_type #lizard only
         self.lizard_spp = lizard_species
@@ -175,13 +175,15 @@ class Individual():
         self.E_G = emissivity #ground emissivity
         self.E_S = 0.97 #emissivity of organism
         self.tpref_mean = tpref_mean
+        self.reproductive_mode=reproductive_mode
+        self.diet = diet
         #self.Tb_shade = Tb_shade
         #self.Tb_sun = Tb_sun
         #self.Tpref_min = Tpref_min
         #self.Tpref_max = Tpref_max
         #self.active_hours = annual_activity_hours
         self.activity_status_5C = activity_status_5C
-        self.activity_status_25C = activity_status_25C
+        self.activity_status_clim = activity_status_clim
     
     def read_relative_path(self, filename):
         return join(dirname(dirname(__file__)), filename)
@@ -322,7 +324,7 @@ for q in tqdm (range (100), desc="Loading..."):
     try:
         for i in range(len(species)):
             #print("i value is:", i)
-            ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i])
+            ectotherm = Individual(species.type[i],species.spp[i],species.lizard_location[i], scenarios[i],species.latitude[i],species.longitude[i],species.altitude[i],species.mass[i],species.length[i],species.width[i],species.emissivity[i],species.tpref_mean[i], species.reproductive_mode[i], species.diet[i])
 
             loaded_frame = ectotherm.dynamic_frame_load()
 
@@ -379,19 +381,21 @@ for q in tqdm (range (100), desc="Loading..."):
                 #print("activity status is:", ectotherm.activity_status_5C)
 
                 if math.cos(ectotherm.zenith(julian, hour)) > 0.:
-                    if any(Tb_shade <= T <= Tb_sun for T in range(int(ectotherm.tpref_mean - 2.5), int(ectotherm.tpref_mean + 3.5))):
-                        ectotherm.activity_status_25C = 1.
+                    Tb_shade_clim = Tb_shade + 3.
+                    Tb_sun_clim = Tb_sun +3.
+                    if any(Tb_shade_clim <= T <= Tb_sun_clim for T in range(int(ectotherm.tpref_mean - 5.), int(ectotherm.tpref_mean + 6.))):
+                        ectotherm.activity_status_clim = 1.
                     else:
-                        ectotherm.activity_status_25C = 0.
+                        ectotherm.activity_status_clim = 0.
                 else:
-                    ectotherm.activity_status_25C = 0.
+                    ectotherm.activity_status_clim = 0.
                 
 
-                activity_data.append([species.spp[i], scenarios[i], julian, hour, species.tpref_mean[i],species.latitude[i],species.longitude[i],species.altitude[i], species.mass[i],species.length[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, ectotherm.activity_status_5C,ectotherm.activity_status_25C,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
+                activity_data.append([species.spp[i], scenarios[i], julian, hour, species.reproductive_mode[i], species.diet[i],species.tpref_mean[i],species.latitude[i],species.longitude[i],species.altitude[i], species.mass[i],species.length[i], Rabs_sun, Rabs_shade, Te_sun, Te_shade, Tb_sun, Tb_shade, ectotherm.activity_status_5C,ectotherm.activity_status_clim,species.ro[i],species.rcm[i],species.growth_k[i],species.growth_linf[i]])
                 # if (index == 2): #comment this line out when generating full results
                 #     break #comment this line out when generating full results
 
-        dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','Tpref_mean','latitude','longitude','altitude','mass','length','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_25C','ro','rcm','growth_k','growth_linf'])
+        dataframe = pd.DataFrame(activity_data, columns = ['species','scenario','julian','hour','reproductive_mode','diet','Tpref_mean','latitude','longitude','altitude','mass','length','Rabs_sun','Rabs_shade','Te_sun','Te_shade','Tb_sun','Tb_shade','activity_status_5C','activity_status_clim','ro','rcm','growth_k','growth_linf'])
         with open(join(dirname(dirname(__file__)), 'output/results.csv'), 'w') as f:
             dataframe.to_csv(f, header=True)
         #f.close()
